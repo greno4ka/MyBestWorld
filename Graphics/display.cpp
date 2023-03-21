@@ -1,5 +1,3 @@
-#include <GL\freeglut.h>
-#include <GL\glu.h>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
@@ -48,11 +46,6 @@ GLuint filter;									  // Используемый фильтр для текстур
 GLuint fogMode[]= { GL_EXP, GL_EXP2, GL_LINEAR }; // Хранит три типа тумана
 GLuint fogfilter= 0;							  // Тип используемого тумана
 GLfloat fogColor[4]= {0.5f, 0.5f, 0.5f, 1.0f};	  // Цвет тумана
-
-///***** система частиц *****
-#define bubles 300
-float movie=0; //переменная передвижения частиц
-double bub[bubles][4]; //система частиц
 
 ///***** процедурная текстура *****
 static GLuint mytex; //имя процедурной текстуры
@@ -756,12 +749,7 @@ glDisable(GL_FOG);
 	DrawMirror();
 	glDisable(GL_BLEND); 
 
-	movie+=0.1f;
-	for (int i = 0; i<bubles; i++)
-	{
-		if (bub[i][1] + movie > 5)
-			bub[i][1] -=  9;
-	}
+
 
 	glPopMatrix();
 	glutSwapBuffers();
@@ -782,24 +770,12 @@ int main (int argc, char **argv)
 {
   srand(time (NULL));
   InitParticle(); 
-  glutInit (&argc, argv);
-  glutInitDisplayMode (GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
-  glutInitWindowSize(X, Y);
-  glutCreateWindow ("Computer graphics");
-  glutFullScreen();
-  glutSetCursor(GLUT_CURSOR_NONE);
+
   if (!firstInit()) return 1;
   InitRandTex();
   mytex = TexGen();
   ModifyRand();
 	square = GenSquare();
-  glutMouseFunc(mouseClick);
-  glutPassiveMotionFunc(mouseMotion);
-  glutKeyboardFunc(keyboard);
-  glutIdleFunc(idle); 
-  glutDisplayFunc(display);
-  glutReshapeFunc(reshape);
-  glutMainLoop();
   
 	glDeleteLists(square,1);
   return 0;

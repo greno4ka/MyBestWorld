@@ -26,13 +26,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    glwidget.cpp
+        Main/main.cpp \
+        Main/mainwindow.cpp \
+        Main/glwidget.cpp \
+    Graphics/BSpline.cpp \
+    Graphics/display.cpp \
+    Graphics/math3d.cpp \
+    bubbles.cpp
 
 HEADERS += \
-        mainwindow.h \
-    glwidget.h
+        Main/mainwindow.h \
+        Main/glwidget.h \
+    Graphics/BSpline.h \
+    Graphics/formats.h \
+    Graphics/light.h \
+    Graphics/math3d.h \
+    Graphics/reflection.h \
+    Graphics/shadow.h \
+    Graphics/system.h \
+    Graphics/texgen.h \
+    Graphics/Vector.h \
+    bubbles.h
 
 FORMS += \
-        mainwindow.ui
+        Main/mainwindow.ui
