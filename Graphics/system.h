@@ -1,5 +1,3 @@
-#include <GL\glut.h>
-
 extern double x_angle, y_angle;
 extern int mouse_x,mouse_y,mouse_button,mouse_state;
 extern bool fog, mballs;

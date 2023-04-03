@@ -8,7 +8,6 @@
 #include "shadow.h"		// тоже просто матрица
 #include "math3d.h"
 #include "system.h"
-#include "particles.h"
 #include "texgen.h"
 #include "light.h"
 

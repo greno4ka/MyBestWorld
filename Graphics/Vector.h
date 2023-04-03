@@ -326,7 +326,7 @@ template<class C,int N,int M> inline void Matrix<C,N,M>::One()
 		for(int j = 0;j<M;j++)
 			data[i][j] = 0;
 	int m = (N<M)?(N):(M);
-	for(i = 0;i<m;i++)
+    for(int i = 0;i<m;i++)
 		data[i][i] = 1;
 }
 
