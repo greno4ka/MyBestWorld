@@ -45,18 +45,18 @@ void BSplineCoeffs::ComputeCoefficients() {
 }
 
 double BSplineCoeffs::ComputeCoefficient(int interval,int n,int i,int k) {
-	if(n == 0) // Áàçèñíàÿ ôóíêöèÿ íóëåâîé ñòåïåíè
+	if(n == 0) // Ð‘Ð°Ð·Ð¸ÑÐ½Ð°Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð½ÑƒÐ»ÐµÐ²Ð¾Ð¹ ÑÑ‚ÐµÐ¿ÐµÐ½Ð¸
 		return (interval == i)?(1.0):(0);
 	else { // n > 0
 		double result = 0;
 		double d1 = knots[i + n + 1] - knots[i + 1];
 		double d0 = knots[i + n] - knots[i];
-		if(k == 0) { // Íóëåâàÿ ñòåïåíü êîýôôèöèåíòà
+		if(k == 0) { // ÐÑƒÐ»ÐµÐ²Ð°Ñ ÑÑ‚ÐµÐ¿ÐµÐ½ÑŒ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð°
 			if(d1 > 0)
 				result += ComputeCoefficient(interval,n-1,i+1,0)*knots[i + n + 1]/d1;
 			if(d0 > 0)
 				result -= ComputeCoefficient(interval,n-1,i,0)*knots[i]/d0;
-		} else if(k == n) { // Ìàêñèìàëüíàÿ ñòåïåíü êîýôôèöèåíòà
+		} else if(k == n) { // ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ ÑÑ‚ÐµÐ¿ÐµÐ½ÑŒ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð°
 			if(d0 > 0)
 				result += ComputeCoefficient(interval,n-1,i,n-1)/d0;
 			if(d1 > 0)

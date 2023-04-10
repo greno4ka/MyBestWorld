@@ -3,9 +3,9 @@ extern int mouse_x,mouse_y,mouse_button,mouse_state;
 extern bool fog, mballs;
 
 extern const double PI;
-extern const double Rad; //для перевода градусов в радианы
-extern float cx,cy,cz,fi,psy,fi_rad,psy_rad; //переменные положения наблюдателя (камеры)
-GLint cur_x = 512, cur_y = 384; //расположение курсора на экране
+extern const double Rad; //РґР»СЏ РїРµСЂРµРІРѕРґР° РіСЂР°РґСѓСЃРѕРІ РІ СЂР°РґРёР°РЅС‹
+extern float cx,cy,cz,fi,psy,fi_rad,psy_rad; //РїРµСЂРµРјРµРЅРЅС‹Рµ РїРѕР»РѕР¶РµРЅРёСЏ РЅР°Р±Р»СЋРґР°С‚РµР»СЏ (РєР°РјРµСЂС‹)
+GLint cur_x = 512, cur_y = 384; //СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ РєСѓСЂСЃРѕСЂР° РЅР° СЌРєСЂР°РЅРµ
 
 bool fullscreen=true;
 
@@ -46,16 +46,16 @@ void keyboard (unsigned char key, int x, int y)
 
 	if (key == 'g' || key == 'G')
 	{
-		if(!fog)                   // Нажата ли клавиша "G"?
-       fog=TRUE;                         // gp устанавливаем в TRUE
-		else fog=FALSE;                        // Если да, gp установить в FALSE
+		if(!fog)                   // РќР°Р¶Р°С‚Р° Р»Рё РєР»Р°РІРёС€Р° "G"?
+       fog=TRUE;                         // gp СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ TRUE
+		else fog=FALSE;                        // Р•СЃР»Рё РґР°, gp СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІ FALSE
 	}	
 	
 	if (key == 'm' || key == 'M')
 	{
-		if(!mballs)                   // Нажата ли клавиша "G"?
-       mballs=TRUE;                         // gp устанавливаем в TRUE
-		else mballs=FALSE;                        // Если да, gp установить в FALSE
+		if(!mballs)                   // РќР°Р¶Р°С‚Р° Р»Рё РєР»Р°РІРёС€Р° "G"?
+       mballs=TRUE;                         // gp СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ TRUE
+		else mballs=FALSE;                        // Р•СЃР»Рё РґР°, gp СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІ FALSE
 	}
 	
 	if (key == 'f' || key == 'F') //toggle screenmode

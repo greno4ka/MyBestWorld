@@ -1,4 +1,4 @@
-void ShadowMatrix(GLfloat SM[4][4], GLfloat plane[4], GLfloat Lightpos[4]) //задание матрицы проецирования для построения тени
+void ShadowMatrix(GLfloat SM[4][4], GLfloat plane[4], GLfloat Lightpos[4]) //Р·Р°РґР°РЅРёРµ РјР°С‚СЂРёС†С‹ РїСЂРѕРµС†РёСЂРѕРІР°РЅРёСЏ РґР»СЏ РїРѕСЃС‚СЂРѕРµРЅРёСЏ С‚РµРЅРё
 {
 	GLfloat dot = plane[0]*Lightpos[0] + 
 			      plane[1]*Lightpos[1] + 

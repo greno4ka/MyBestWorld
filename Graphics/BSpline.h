@@ -13,17 +13,17 @@ enum BSplineBasisType {
 
 class BSplineCoeffs {
 protected:
-	// Количество контрольных точек
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… С‚РѕС‡РµРє
 	int numPoints;
-	// Степень сплайна (степень = порядок - 1)
+	// РЎС‚РµРїРµРЅСЊ СЃРїР»Р°Р№РЅР° (СЃС‚РµРїРµРЅСЊ = РїРѕСЂСЏРґРѕРє - 1)
 	int degree;
-	// Узловой вектор
+	// РЈР·Р»РѕРІРѕР№ РІРµРєС‚РѕСЂ
 	double *knots;
-	// Длина узлового вектора = numPoints + degree + 1
+	// Р”Р»РёРЅР° СѓР·Р»РѕРІРѕРіРѕ РІРµРєС‚РѕСЂР° = numPoints + degree + 1
 	int numKnots;
-	// Коэффициенты базисных функций
-	// Обращение: coeffs[номер интервала - degree,
-	// номер базисной функции - номер интервала - degree, степень коэффициента]
+	// РљРѕСЌС„С„РёС†РёРµРЅС‚С‹ Р±Р°Р·РёСЃРЅС‹С… С„СѓРЅРєС†РёР№
+	// РћР±СЂР°С‰РµРЅРёРµ: coeffs[РЅРѕРјРµСЂ РёРЅС‚РµСЂРІР°Р»Р° - degree,
+	// РЅРѕРјРµСЂ Р±Р°Р·РёСЃРЅРѕР№ С„СѓРЅРєС†РёРё - РЅРѕРјРµСЂ РёРЅС‚РµСЂРІР°Р»Р° - degree, СЃС‚РµРїРµРЅСЊ РєРѕСЌС„С„РёС†РёРµРЅС‚Р°]
 	double *coeffs;
 public:
 	BSplineCoeffs(int numPoints,int degree,const double *kn);
@@ -42,18 +42,18 @@ public:
 	    { return knots[degree]; }
 	double GetParameterMax() const
 		{ return knots[numPoints]; }
-	// Возвращает заранее вычисленный коэффициент базисной функции.
-	// interval - Номер интервала - degree.
-	// i - Номер базисной функции.
-	// k - Степень при коэффициенте базисной функции.
-	// Возвращаеи значение соответствующего коэффициента.
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°СЂР°РЅРµРµ РІС‹С‡РёСЃР»РµРЅРЅС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚ Р±Р°Р·РёСЃРЅРѕР№ С„СѓРЅРєС†РёРё.
+	// interval - РќРѕРјРµСЂ РёРЅС‚РµСЂРІР°Р»Р° - degree.
+	// i - РќРѕРјРµСЂ Р±Р°Р·РёСЃРЅРѕР№ С„СѓРЅРєС†РёРё.
+	// k - РЎС‚РµРїРµРЅСЊ РїСЂРё РєРѕСЌС„С„РёС†РёРµРЅС‚Рµ Р±Р°Р·РёСЃРЅРѕР№ С„СѓРЅРєС†РёРё.
+	// Р’РѕР·РІСЂР°С‰Р°РµРё Р·РЅР°С‡РµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ РєРѕСЌС„С„РёС†РёРµРЅС‚Р°.
 	double GetCoeff(int interval,int i,int k) const;
 	double GetBasisValue(int interval,int i,double t) const;
 	double GetDerivativeValue(int interval,int i,double t) const;
 protected:
-	inline double &Coeffs(int i,int j,int k) // Имитируем трехмерный массив
+	inline double &Coeffs(int i,int j,int k) // РРјРёС‚РёСЂСѓРµРј С‚СЂРµС…РјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ
 		{ return coeffs[(i*(degree + 1) + j)*(degree + 1) + k]; }
-	inline double Coeffs(int i,int j,int k) const // Имитируем трехмерный массив
+	inline double Coeffs(int i,int j,int k) const // РРјРёС‚РёСЂСѓРµРј С‚СЂРµС…РјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ
 		{ return coeffs[(i*(degree + 1) + j)*(degree + 1) + k]; }
 	void ComputeCoefficients();
 	double ComputeCoefficient(int interval,int n,int i,int k);
@@ -87,11 +87,11 @@ const int DefaultTesselation = 101;
 
 class BSplineBasis : public BSplineCoeffs {
 protected:
-	// Количество точек разбиения параметрической кривой
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє СЂР°Р·Р±РёРµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРѕР№ РєСЂРёРІРѕР№
 	int tesselation; 
-	// Значение базисных функций в точках разбиения. 
+	// Р—РЅР°С‡РµРЅРёРµ Р±Р°Р·РёСЃРЅС‹С… С„СѓРЅРєС†РёР№ РІ С‚РѕС‡РєР°С… СЂР°Р·Р±РёРµРЅРёСЏ. 
 	double *b;
-	// Значения базисный функций в точках разбиения для вычисления производной.
+	// Р—РЅР°С‡РµРЅРёСЏ Р±Р°Р·РёСЃРЅС‹Р№ С„СѓРЅРєС†РёР№ РІ С‚РѕС‡РєР°С… СЂР°Р·Р±РёРµРЅРёСЏ РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ РїСЂРѕРёР·РІРѕРґРЅРѕР№.
 	double *d;
 public:
 	BSplineBasis(int tesselation,BSplineBasisType type,int numPoints,int degree,double tmin,double tmax) : 

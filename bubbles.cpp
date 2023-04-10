@@ -14,7 +14,7 @@ Bubbles::Bubbles(int numOfBubbles, double maxH)
 
         int alpha = rand() % 360;
         float dist = 2.0f*rand() / RAND_MAX;
-        bubbles[i][0] = dist * cos(alpha * radian);		// х
+        bubbles[i][0] = dist * cos(alpha * radian);		// С…
         bubbles[i][1] = -4.8+10.0f*rand() / RAND_MAX;   // y
         bubbles[i][2] = dist * sin(alpha * radian);     // z
         bubbles[i][3] = 1.0f + 2.0f * rand() / RAND_MAX;// r

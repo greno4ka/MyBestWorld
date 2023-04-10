@@ -4,15 +4,15 @@
 #include <time.h>
 #include "BSpline.h"
 #include "formats.h"
-#include "reflection.h" // просто матрица
-#include "shadow.h"		// тоже просто матрица
+#include "reflection.h" // РїСЂРѕСЃС‚Рѕ РјР°С‚СЂРёС†Р°
+#include "shadow.h"		// С‚РѕР¶Рµ РїСЂРѕСЃС‚Рѕ РјР°С‚СЂРёС†Р°
 #include "math3d.h"
 #include "system.h"
 #include "texgen.h"
 #include "light.h"
 
 const double PI = 3.14159265358979323846;
-const double Rad = PI / 180.0f; // для перевода градусов в радианы
+const double Rad = PI / 180.0f; // РґР»СЏ РїРµСЂРµРІРѕРґР° РіСЂР°РґСѓСЃРѕРІ РІ СЂР°РґРёР°РЅС‹
 GLint X = 800, Y = 600;
 int mouse_x = 0,
 	mouse_y = 0,
@@ -27,40 +27,40 @@ float cx = 2.0f,
 	  fi_rad = 0.0f,
 	  psy_rad = 0.0f;
 
-/// ***** для текcтурок *****
+/// ***** РґР»СЏ С‚РµРєcС‚СѓСЂРѕРє *****
 int tex_width,
     tex_height;
 unsigned char *t1=NULL,
 			  *t2=NULL;
 GLuint texture[2],butt;
 
-/// ***** зеркало *****
+/// ***** Р·РµСЂРєР°Р»Рѕ *****
 float reflection_matrix [4][4]={0};
 float plane_point[3] ={-5.0,0.0,0.0};
 float plane_normal[3] = {1.0,0.0,0.0};
 
-///***** туман *****
-bool   fog=FALSE;								  // G Нажата?
-GLuint filter;									  // Используемый фильтр для текстур 
-GLuint fogMode[]= { GL_EXP, GL_EXP2, GL_LINEAR }; // Хранит три типа тумана
-GLuint fogfilter= 0;							  // Тип используемого тумана
-GLfloat fogColor[4]= {0.5f, 0.5f, 0.5f, 1.0f};	  // Цвет тумана
+///***** С‚СѓРјР°РЅ *****
+bool   fog=FALSE;								  // G РќР°Р¶Р°С‚Р°?
+GLuint filter;									  // РСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С„РёР»СЊС‚СЂ РґР»СЏ С‚РµРєСЃС‚СѓСЂ 
+GLuint fogMode[]= { GL_EXP, GL_EXP2, GL_LINEAR }; // РҐСЂР°РЅРёС‚ С‚СЂРё С‚РёРїР° С‚СѓРјР°РЅР°
+GLuint fogfilter= 0;							  // РўРёРї РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ С‚СѓРјР°РЅР°
+GLfloat fogColor[4]= {0.5f, 0.5f, 0.5f, 1.0f};	  // Р¦РІРµС‚ С‚СѓРјР°РЅР°
 
-///***** процедурная текстура *****
-static GLuint mytex; //имя процедурной текстуры
-static GLuint Rand[512][512][3]; //массив пикселей для процедурной текстуры
+///***** РїСЂРѕС†РµРґСѓСЂРЅР°СЏ С‚РµРєСЃС‚СѓСЂР° *****
+static GLuint mytex; //РёРјСЏ РїСЂРѕС†РµРґСѓСЂРЅРѕР№ С‚РµРєСЃС‚СѓСЂС‹
+static GLuint Rand[512][512][3]; //РјР°СЃСЃРёРІ РїРёРєСЃРµР»РµР№ РґР»СЏ РїСЂРѕС†РµРґСѓСЂРЅРѕР№ С‚РµРєСЃС‚СѓСЂС‹
 
-/// ***** игра теней *****
-GLfloat SM[4][4]; //матрица проецирования
-GLfloat ShadowPlane[4] = {0,1,0,0.89}; // уравнение плоскости
-GLfloat LightPos[4] = {2.0f, 5.0f, 2.0f, 1.0f}; //расположение источника света
+/// ***** РёРіСЂР° С‚РµРЅРµР№ *****
+GLfloat SM[4][4]; //РјР°С‚СЂРёС†Р° РїСЂРѕРµС†РёСЂРѕРІР°РЅРёСЏ
+GLfloat ShadowPlane[4] = {0,1,0,0.89}; // СѓСЂР°РІРЅРµРЅРёРµ РїР»РѕСЃРєРѕСЃС‚Рё
+GLfloat LightPos[4] = {2.0f, 5.0f, 2.0f, 1.0f}; //СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ РёСЃС‚РѕС‡РЅРёРєР° СЃРІРµС‚Р°
 
-bool mballs=false; // избавиться от дурацких шаров
+bool mballs=false; // РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ РґСѓСЂР°С†РєРёС… С€Р°СЂРѕРІ
 
 GLuint objectList;
 GLuint  square;
 
-// Количество точек в аппроксимации контура
+// РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІ Р°РїРїСЂРѕРєСЃРёРјР°С†РёРё РєРѕРЅС‚СѓСЂР°
 int N = 100;
 
 double2 ControlPoints[] = {
@@ -146,12 +146,12 @@ void DrawSquare()
 }
 
 
-inline double f(double x1, double y1, double z1, double x2, double y2, double z2, double mas) // основная функция для меташаров (здесь 1 / r^2)
+inline double f(double x1, double y1, double z1, double x2, double y2, double z2, double mas) // РѕСЃРЅРѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РјРµС‚Р°С€Р°СЂРѕРІ (Р·РґРµСЃСЊ 1 / r^2)
 {return  mas / (((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2)) + 0.00000001);}
 
-double threshold = 100; // пороговое значение для меташаров
+double threshold = 100; // РїРѕСЂРѕРіРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РјРµС‚Р°С€Р°СЂРѕРІ
 
-double binary_find(double low, double high, double x) // рекурсивная функция метода деления пополам
+double binary_find(double low, double high, double x) // СЂРµРєСѓСЂСЃРёРІРЅР°СЏ С„СѓРЅРєС†РёСЏ РјРµС‚РѕРґР° РґРµР»РµРЅРёСЏ РїРѕРїРѕР»Р°Рј
 {
 	if (high - low > 0.001)
 	{
@@ -168,16 +168,16 @@ double binary_find(double low, double high, double x) // рекурсивная функция мет
 void DrawMetaball()
 {
   GLUquadricObj * qobj = gluNewQuadric();
-  double temp_x = 0; // начальная координата по х (оси, на которой строятся меташары)
-  double radius = 0; // радиус усеченного конуса (по сути координата y, найденная бинарным поиском)
-  double radius_last = 0; // радиус предыдущего усеченного конуса
+  double temp_x = 0; // РЅР°С‡Р°Р»СЊРЅР°СЏ РєРѕРѕСЂРґРёРЅР°С‚Р° РїРѕ С… (РѕСЃРё, РЅР° РєРѕС‚РѕСЂРѕР№ СЃС‚СЂРѕСЏС‚СЃСЏ РјРµС‚Р°С€Р°СЂС‹)
+  double radius = 0; // СЂР°РґРёСѓСЃ СѓСЃРµС‡РµРЅРЅРѕРіРѕ РєРѕРЅСѓСЃР° (РїРѕ СЃСѓС‚Рё РєРѕРѕСЂРґРёРЅР°С‚Р° y, РЅР°Р№РґРµРЅРЅР°СЏ Р±РёРЅР°СЂРЅС‹Рј РїРѕРёСЃРєРѕРј)
+  double radius_last = 0; // СЂР°РґРёСѓСЃ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СѓСЃРµС‡РµРЅРЅРѕРіРѕ РєРѕРЅСѓСЃР°
   
   for (int i = 0; i < 2000; i++)
   {
 	  temp_x += 0.005;
 	  radius_last = radius;
 	  radius = binary_find(0, 100, temp_x);
-	  if (radius < 0.01) // устранение бага с точками
+	  if (radius < 0.01) // СѓСЃС‚СЂР°РЅРµРЅРёРµ Р±Р°РіР° СЃ С‚РѕС‡РєР°РјРё
 		  radius = 0;
 	  
 	  glPushMatrix();
@@ -202,19 +202,19 @@ void DrawBSP(){
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.05);
-	// Параметры материала 
+	// РџР°СЂР°РјРµС‚СЂС‹ РјР°С‚РµСЂРёР°Р»Р° 
 	GLfloat bsp_a[4] = { 0.0, 0.01, 0.0, 0.8 }; 
 	GLfloat bsp_d[4] = { 0.0, 0.05, 0.0, 0.8 };
 	GLfloat bsp_s[4] = { 0.0, 0.1, 0.0, 0.8 };
 	GLfloat bsp_r = 128;
-	// Устанавливаем параметры материала
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РјР°С‚РµСЂРёР°Р»Р°
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, bsp_a);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, bsp_d);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, bsp_s);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &bsp_r);
 	
-	glEnable(GL_NORMALIZE); // нормализовали нормаль
-	glScalef(0.9,0.9,0.9); // масштаб бутылки
+	glEnable(GL_NORMALIZE); // РЅРѕСЂРјР°Р»РёР·РѕРІР°Р»Рё РЅРѕСЂРјР°Р»СЊ
+	glScalef(0.9,0.9,0.9); // РјР°СЃС€С‚Р°Р± Р±СѓС‚С‹Р»РєРё
 	glTranslatef(0.0,-1.0,0.0);
 	glCallList(objectList);
 	glEnable(GL_COLOR_MATERIAL);
@@ -226,18 +226,18 @@ void DrawLamp(){
 	glPushMatrix();
 	
 	glEnable(GL_LIGHTING); 
-	// Параметры материала 
+	// РџР°СЂР°РјРµС‚СЂС‹ РјР°С‚РµСЂРёР°Р»Р° 
 	GLfloat bsp_a[4] = { 3, 3, 3, 1.0 }; 
 	GLfloat bsp_d[4] = { 3, 3, 3, 1.0 };
 	GLfloat bsp_s[4] = { 3, 3, 3, 1.0 };
 	GLfloat bsp_r = 128;
-	// Устанавливаем параметры материала
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РјР°С‚РµСЂРёР°Р»Р°
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, bsp_a);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, bsp_d);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, bsp_s);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &bsp_r);
 	
-	glEnable(GL_NORMALIZE); // нормализовали нормаль
+	glEnable(GL_NORMALIZE); // РЅРѕСЂРјР°Р»РёР·РѕРІР°Р»Рё РЅРѕСЂРјР°Р»СЊ
 	glTranslatef(2,5,2);
 	glutSolidSphere(0.1,20,20);
 	glEnable(GL_COLOR_MATERIAL);
@@ -280,12 +280,12 @@ void DrawCornellBox()
 	glEnable(GL_NORMALIZE);
 	glScaled(5,5,5);
 	glDisable(GL_COLOR_MATERIAL);
-	// Параметры материала 
+	// РџР°СЂР°РјРµС‚СЂС‹ РјР°С‚РµСЂРёР°Р»Р° 
 	GLfloat bsp_a[4] = { 0.3, 0.3, 0.3, 1 }; 
 	GLfloat bsp_d[4] = { 0.5, 0.5, 0.5, 1 };
 	GLfloat bsp_s[4] = { 0.0, 0.0, 0.0, 1 };
 	GLfloat bsp_r = 1;
-	// Устанавливаем параметры материала
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РјР°С‚РµСЂРёР°Р»Р°
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, bsp_a);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, bsp_d);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, bsp_s);
@@ -299,7 +299,7 @@ void DrawCornellBox()
 	double h=0.1;		
 	glBegin(GL_QUADS);
 	glNormal3f(1,0,0);
-		// передняя
+		// РїРµСЂРµРґРЅСЏСЏ
 	for (double i=-1.0;i<1.0-h;i+=h)
 		for (double j=-1.0;j<1.0-h;j+=h) 
 			{
@@ -308,7 +308,7 @@ void DrawCornellBox()
 			glTexCoord2f(1.0f, 1.0f);	glVertex3d(i+h,j+h,1.0f);
 			glTexCoord2f(0.0f, 1.0f);	glVertex3d(i,j+h,1.0f);
 			};
-		// задняя
+		// Р·Р°РґРЅСЏСЏ
 		for (double i=-1.0;i<1.0-h;i+=h)
 		for (double j=-1.0;j<1.0-h;j+=h) 
 			{
@@ -317,17 +317,17 @@ void DrawCornellBox()
 			glTexCoord2f(1.0f, 1.0f);	glVertex3d(i+h,j+h,-1.0f);
 			glTexCoord2f(0.0f, 1.0f);	glVertex3d(i,j+h,-1.0f);
 			};	
-		// верхняя
+		// РІРµСЂС…РЅСЏСЏ
 		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
 		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
 		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
 		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-		// нижняя
+		// РЅРёР¶РЅСЏСЏ
 		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
 		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
 		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
 		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
-		// правая
+		// РїСЂР°РІР°СЏ
 		h=0.2;
 		for (double i=-1.0;i<1.0;i+=h)
 		for (double j=-1.0;j<1.0;j+=h) 
@@ -337,14 +337,14 @@ void DrawCornellBox()
 			glTexCoord2f(0.0f, 1.0f);	glVertex3d(1.0f,i+h,j+h);
 			glTexCoord2f(0.0f, 0.0f);	glVertex3d(1.0f,i,j+h);
 			};	
-		// левая
+		// Р»РµРІР°СЏ
 		//glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
 		//glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
 		//glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
 		//glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	
 	glEnd();	
 
-	// стол
+	// СЃС‚РѕР»
 	glBindTexture(GL_TEXTURE_2D, mytex);		
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -0.18f, -1.0f);
@@ -394,7 +394,7 @@ unsigned char *LoadTrueColorBMPFile(const char *path,int *width,int *height)
 }
 
 
-/// специальная загрузка для billboard
+/// СЃРїРµС†РёР°Р»СЊРЅР°СЏ Р·Р°РіСЂСѓР·РєР° РґР»СЏ billboard
 unsigned char *ConstructTexture(int *w,int *h)
 {
 	int width1,height1;
@@ -429,7 +429,7 @@ unsigned char *ConstructTexture(int *w,int *h)
 }
 
 #define BUTTS 4 
-double Butts[BUTTS][6] = // (x,y,z, высота, ширина, расстояние до камеры)
+double Butts[BUTTS][6] = // (x,y,z, РІС‹СЃРѕС‚Р°, С€РёСЂРёРЅР°, СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РєР°РјРµСЂС‹)
 { 
 	{-1, 3, -2, 0.3, 0.3, 0},
 	{-1, 3, 1, 0.3, 0.3, 0},
@@ -448,7 +448,7 @@ void CalcDestButts()
 	}
 }
 
-void SortButts(int L, int R) // сортировка биллбоардов
+void SortButts(int L, int R) // СЃРѕСЂС‚РёСЂРѕРІРєР° Р±РёР»Р»Р±РѕР°СЂРґРѕРІ
 {	
 	while (L < R)
     {
@@ -483,7 +483,7 @@ void SortButts(int L, int R) // сортировка биллбоардов
 	}
 }
 
-void Picture(GLfloat x, GLfloat y, GLfloat z, float size1, float size2, GLint texture) //рендеринг биллбоарда
+void Picture(GLfloat x, GLfloat y, GLfloat z, float size1, float size2, GLint texture) //СЂРµРЅРґРµСЂРёРЅРі Р±РёР»Р»Р±РѕР°СЂРґР°
 {
 	glPushMatrix();
 		glTranslatef(x,y,z);
@@ -506,7 +506,7 @@ void Picture(GLfloat x, GLfloat y, GLfloat z, float size1, float size2, GLint te
 	glPopMatrix();
 }
 
-void AddButts() // добавление массива биллбоардов
+void AddButts() // РґРѕР±Р°РІР»РµРЅРёРµ РјР°СЃСЃРёРІР° Р±РёР»Р»Р±РѕР°СЂРґРѕРІ
 {
 	for (int i = BUTTS - 1; i >= 0; i--)
 	{
@@ -517,29 +517,29 @@ void AddButts() // добавление массива биллбоардов
 bool InitTex(){	
 	if((t1 = LoadTrueColorBMPFile("Textures/glass.bmp",&tex_width,&tex_height)) == NULL) return false;
 	if((t2 = LoadTrueColorBMPFile("Textures/cmc.bmp",&tex_width,&tex_height)) == NULL)	  return false;	
-	glGenTextures(3,texture); // Создаем текстурный объект
+	glGenTextures(3,texture); // РЎРѕР·РґР°РµРј С‚РµРєСЃС‚СѓСЂРЅС‹Р№ РѕР±СЉРµРєС‚
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT,1); // Загружаем текстуру
-	glBindTexture(GL_TEXTURE_2D,texture[0]); // Активизируем текстурный  объект
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1); // Р—Р°РіСЂСѓР¶Р°РµРј С‚РµРєСЃС‚СѓСЂСѓ
+	glBindTexture(GL_TEXTURE_2D,texture[0]); // РђРєС‚РёРІРёР·РёСЂСѓРµРј С‚РµРєСЃС‚СѓСЂРЅС‹Р№  РѕР±СЉРµРєС‚
 	gluBuild2DMipmaps(GL_TEXTURE_2D,  
-			          3,                     // Формат текстуры
-			          tex_width,tex_height,  // Размер текстуры
-			          GL_RGB,                // Формат исходных данных
-			          GL_UNSIGNED_BYTE,      // Тип исходных данных
-				      t1);             // Указатель на исходные данные */
-	delete[] t1;	// Освобождаем память, в которой хранилась текстура
+			          3,                     // Р¤РѕСЂРјР°С‚ С‚РµРєСЃС‚СѓСЂС‹
+			          tex_width,tex_height,  // Р Р°Р·РјРµСЂ С‚РµРєСЃС‚СѓСЂС‹
+			          GL_RGB,                // Р¤РѕСЂРјР°С‚ РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
+			          GL_UNSIGNED_BYTE,      // РўРёРї РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
+				      t1);             // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ */
+	delete[] t1;	// РћСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ, РІ РєРѕС‚РѕСЂРѕР№ С…СЂР°РЅРёР»Р°СЃСЊ С‚РµРєСЃС‚СѓСЂР°
 
 	
 
-//то же самое для второй из массива
+//С‚Рѕ Р¶Рµ СЃР°РјРѕРµ РґР»СЏ РІС‚РѕСЂРѕР№ РёР· РјР°СЃСЃРёРІР°
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	gluBuild2DMipmaps(GL_TEXTURE_2D,  
-			          3,                     // Формат текстуры
-			          tex_width,tex_height,  // Размер текстуры
-			          GL_RGB,                // Формат исходных данных
-			          GL_UNSIGNED_BYTE,      // Тип исходных данных
-				      t2);             // Указатель на исходные данные */
+			          3,                     // Р¤РѕСЂРјР°С‚ С‚РµРєСЃС‚СѓСЂС‹
+			          tex_width,tex_height,  // Р Р°Р·РјРµСЂ С‚РµРєСЃС‚СѓСЂС‹
+			          GL_RGB,                // Р¤РѕСЂРјР°С‚ РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
+			          GL_UNSIGNED_BYTE,      // РўРёРї РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
+				      t2);             // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ */
 	delete[] t2;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -560,13 +560,13 @@ bool firstInit(void)
     if (!InitTex()) return FALSE;
 
     InitLight();
-	/// бутылка
+	/// Р±СѓС‚С‹Р»РєР°
 	objectList = glGenLists(1);
 	glNewList(objectList,GL_COMPILE);
 	glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	glColor3f(1,1,1);
-	// Нижняя розетка треугольников
+	// РќРёР¶РЅСЏСЏ СЂРѕР·РµС‚РєР° С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	glBegin(GL_TRIANGLES);
 	for(int i = 0;i<N;i++)
 	{
@@ -582,7 +582,7 @@ bool firstInit(void)
 	}
 	glEnd();
 		
-	// Средняя часть объекта
+	// РЎСЂРµРґРЅСЏСЏ С‡Р°СЃС‚СЊ РѕР±СЉРµРєС‚Р°
 	for(int j = 1;j<bsp.GetTesselation() - 2;j++) {
 		glBegin(GL_QUAD_STRIP);
 		for(int i = 0;i<=N;i++) {
@@ -595,7 +595,7 @@ bool firstInit(void)
 		glEnd();
 	}
 
-	// Верхняя розетка треугольников
+	// Р’РµСЂС…РЅСЏСЏ СЂРѕР·РµС‚РєР° С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	glBegin(GL_TRIANGLES);
 	int n2 = bsp.GetTesselation() - 1;
 	for(int i = 0;i<N;i++) {
@@ -612,18 +612,18 @@ bool firstInit(void)
 	glEnd();
 	glEndList();
 
-	glEnable(GL_DEPTH_TEST); // потом мы будем рисовать освещённую сцену поверх неосвещённой
+	glEnable(GL_DEPTH_TEST); // РїРѕС‚РѕРј РјС‹ Р±СѓРґРµРј СЂРёСЃРѕРІР°С‚СЊ РѕСЃРІРµС‰С‘РЅРЅСѓСЋ СЃС†РµРЅСѓ РїРѕРІРµСЂС… РЅРµРѕСЃРІРµС‰С‘РЅРЅРѕР№
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LIGHTING);
-	glEnable(GL_COLOR_MATERIAL); // теперь цвет объектов будет сохраняться и при освещении
+	glEnable(GL_COLOR_MATERIAL); // С‚РµРїРµСЂСЊ С†РІРµС‚ РѕР±СЉРµРєС‚РѕРІ Р±СѓРґРµС‚ СЃРѕС…СЂР°РЅСЏС‚СЊСЃСЏ Рё РїСЂРё РѕСЃРІРµС‰РµРЅРёРё
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHT0);
 	
-///***** меташары *****
+///***** РјРµС‚Р°С€Р°СЂС‹ *****
 	for (int i = 0; i < 9; i++)
 	{
 		mb[i].x = i-4.5;
@@ -635,7 +635,7 @@ bool firstInit(void)
 			mb[i].speed = 0.1;
 	}
 
-	///*****бабочки*****
+	///*****Р±Р°Р±РѕС‡РєРё*****
 unsigned char *tex_bits = NULL;
 	int tex_width,tex_height;
 	if((tex_bits = ConstructTexture(&tex_width,&tex_height)) == NULL)
@@ -664,14 +664,14 @@ glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 glClearColor(0,0,0,1.0f);      
 if (fog)
 {
-glClearColor(0.5f,0.5f,0.5f,1.0f);      // Будем очищать экран, заполняя его цветом тумана. ( Изменено )
-glEnable(GL_FOG);                       // Включает туман (GL_FOG)
-glFogi(GL_FOG_MODE, fogMode[1]);// Выбираем тип тумана
-glFogfv(GL_FOG_COLOR, fogColor);        // Устанавливаем цвет тумана
-glFogf(GL_FOG_DENSITY, 0.10f);          // Насколько густым будет туман
-glHint(GL_FOG_HINT, GL_NICEST);      // Вспомогательная установка тумана
-glFogf(GL_FOG_START, 0.1f);             // Глубина, с которой начинается туман
-glFogf(GL_FOG_END, 15.0f);               // Глубина, где туман заканчивается.
+glClearColor(0.5f,0.5f,0.5f,1.0f);      // Р‘СѓРґРµРј РѕС‡РёС‰Р°С‚СЊ СЌРєСЂР°РЅ, Р·Р°РїРѕР»РЅСЏСЏ РµРіРѕ С†РІРµС‚РѕРј С‚СѓРјР°РЅР°. ( РР·РјРµРЅРµРЅРѕ )
+glEnable(GL_FOG);                       // Р’РєР»СЋС‡Р°РµС‚ С‚СѓРјР°РЅ (GL_FOG)
+glFogi(GL_FOG_MODE, fogMode[1]);// Р’С‹Р±РёСЂР°РµРј С‚РёРї С‚СѓРјР°РЅР°
+glFogfv(GL_FOG_COLOR, fogColor);        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚ С‚СѓРјР°РЅР°
+glFogf(GL_FOG_DENSITY, 0.10f);          // РќР°СЃРєРѕР»СЊРєРѕ РіСѓСЃС‚С‹Рј Р±СѓРґРµС‚ С‚СѓРјР°РЅ
+glHint(GL_FOG_HINT, GL_NICEST);      // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР° С‚СѓРјР°РЅР°
+glFogf(GL_FOG_START, 0.1f);             // Р“Р»СѓР±РёРЅР°, СЃ РєРѕС‚РѕСЂРѕР№ РЅР°С‡РёРЅР°РµС‚СЃСЏ С‚СѓРјР°РЅ
+glFogf(GL_FOG_END, 15.0f);               // Р“Р»СѓР±РёРЅР°, РіРґРµ С‚СѓРјР°РЅ Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ.
 }
 else 
 glDisable(GL_FOG);
@@ -692,7 +692,7 @@ glDisable(GL_FOG);
 	DrawSquare();
 	if(mballs) DrawMetaball();
 	
-	/// Нарисовать тень
+	/// РќР°СЂРёСЃРѕРІР°С‚СЊ С‚РµРЅСЊ
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ShadowMatrix(SM, ShadowPlane, LightPos);
@@ -702,10 +702,10 @@ glDisable(GL_FOG);
 	ParticleSystem();
 	if(mballs) DrawMetaball();
 	glPopMatrix();
-	// Закончили рисовать тень
+	// Р—Р°РєРѕРЅС‡РёР»Рё СЂРёСЃРѕРІР°С‚СЊ С‚РµРЅСЊ
  
-	//рисуем зеркало
-	// Помечаем в буфере трафарета пикселы отражающей поверхности
+	//СЂРёСЃСѓРµРј Р·РµСЂРєР°Р»Рѕ
+	// РџРѕРјРµС‡Р°РµРј РІ Р±СѓС„РµСЂРµ С‚СЂР°С„Р°СЂРµС‚Р° РїРёРєСЃРµР»С‹ РѕС‚СЂР°Р¶Р°СЋС‰РµР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_ALWAYS,1,0);
 	glStencilOp(GL_ZERO,GL_ZERO,GL_REPLACE);
@@ -717,7 +717,7 @@ glDisable(GL_FOG);
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
 	
-	// Рисуем отраженные объекты
+	// Р РёСЃСѓРµРј РѕС‚СЂР°Р¶РµРЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹
 	glStencilFunc(GL_EQUAL,0x1,0xffffffff);
 	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 	glStencilFunc(GL_EQUAL,1,1);
@@ -760,7 +760,7 @@ void idle (void)
 	{
 		mb[i].x += mb[i].speed * 0.01 * 20;
 		if ((mb[i].x < -4.7) || (mb[i].x > 9.7))
-		mb[i].speed = -mb[i].speed; // отражение от стенок
+		mb[i].speed = -mb[i].speed; // РѕС‚СЂР°Р¶РµРЅРёРµ РѕС‚ СЃС‚РµРЅРѕРє
 	}	 	
   glutPostRedisplay();
 }

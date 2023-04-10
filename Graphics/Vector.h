@@ -4,7 +4,7 @@
 
 #include<math.h>
 
-// Вектор произвольной размерности
+// Р’РµРєС‚РѕСЂ РїСЂРѕРёР·РІРѕР»СЊРЅРѕР№ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё
 
 template<class C,int N> class Vector {
 protected:
@@ -67,11 +67,11 @@ template<class C,int N> inline Vector<C,N> &Vector<C,N>::operator-=(const Vector
 	return *this;
 }
 
-// Вектор размерности 2
+// Р’РµРєС‚РѕСЂ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё 2
 
 template<class C> class Vector<C,2> {
 public:
-#pragma pack(1)	// Побайтовое выравнивание
+#pragma pack(1)	// РџРѕР±Р°Р№С‚РѕРІРѕРµ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ
 	union {
 	    C data[2];
 		struct {
@@ -114,11 +114,11 @@ template<class C> inline void Vector<C,2>::Normalize()
 	y /= length;
 }
 
-// Вектор размерности 3
+// Р’РµРєС‚РѕСЂ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё 3
 
 template<class C> class Vector<C,3> {
 public:
-#pragma pack(1)	// Побайтовое выравнивание
+#pragma pack(1)	// РџРѕР±Р°Р№С‚РѕРІРѕРµ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ
 	union {
 	    C data[3];
 		struct {
@@ -172,11 +172,11 @@ template<class C> inline Vector<C,3> operator * (const Vector<C,3> &a, const Vec
 				   a.y*b.x - a.x*b.y);
 }
 
-// Вектор размерности 4
+// Р’РµРєС‚РѕСЂ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё 4
 
 template<class C> class Vector<C,4> {
 public:
-#pragma pack(1)	// Побайтовое выравнивание
+#pragma pack(1)	// РџРѕР±Р°Р№С‚РѕРІРѕРµ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ
 	union {
 	    C data[4];
 		struct {
@@ -221,7 +221,7 @@ template<class C> inline void Vector<C,4>::Normalize()
 	w /= length;
 }
 
-// Операции над векторами произвольной размерности
+// РћРїРµСЂР°С†РёРё РЅР°Рґ РІРµРєС‚РѕСЂР°РјРё РїСЂРѕРёР·РІРѕР»СЊРЅРѕР№ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё
 
 template<class C,int N> inline Vector<C,N> operator*(const Vector<C,N> &a,C b)
 {
@@ -396,7 +396,7 @@ template<class C> inline void RotateY(Matrix<C,4,4> &m,C angle)
 	m[2][2] = c;
 }
 
-// Определения основных типов
+// РћРїСЂРµРґРµР»РµРЅРёСЏ РѕСЃРЅРѕРІРЅС‹С… С‚РёРїРѕРІ
 
 typedef Vector<float,4> float4;
 typedef Vector<float,3> float3;
